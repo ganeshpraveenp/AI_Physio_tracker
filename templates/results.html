@@ -1,0 +1,31 @@
+<h2>Patient Exercise Results</h2>
+
+<table border="1">
+
+<tr>
+<th>Name</th>
+<th>Register ID</th>
+<th>Exercise</th>
+<th>Target</th>
+<th>Completed</th>
+<th>Accuracy</th>
+<th>Time</th>
+<th>Date</th>
+</tr>
+
+{% for row in data %}
+
+<tr>
+<td>{{row[0]}}</td>
+<td>{{row[1]}}</td>
+<td>{{row[2]}}</td>
+<td>{{row[3]}}</td>
+<td>{{row[4]}}</td>
+<td>{{row[5]}} %</td>
+<td>{{row[6]}} sec</td>
+<td>{{row[7]}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
