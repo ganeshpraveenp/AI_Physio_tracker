@@ -1,31 +1,56 @@
 <h2>Patient Exercise Results</h2>
 
-<table border="1">
-
+<table border="1" cellpadding="5" cellspacing="0">
 <tr>
-<th>Name</th>
-<th>Register ID</th>
-<th>Exercise</th>
-<th>Target</th>
-<th>Completed</th>
-<th>Accuracy</th>
-<th>Time</th>
-<th>Date</th>
+    <th>Name</th>
+    <th>Register ID</th>
+    <th>Exercise</th>
+    <th>Target Reps</th>
+    <th>Completed Reps</th>
+    <th>Correct Reps</th>
+    <th>Accuracy (%)</th>
+    <th>Max Flexion (°)</th>
+    <th>Max Extension (°)</th>
+    <th>ROM (°)</th>
+    <th>Avg Rep Time (sec)</th>
+    <th>Form Score (%)</th>
+    <th>Date</th>
 </tr>
 
 {% for row in data %}
-
 <tr>
-<td>{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2]}}</td>
-<td>{{row[3]}}</td>
-<td>{{row[4]}}</td>
-<td>{{row[5]}} %</td>
-<td>{{row[6]}} sec</td>
-<td>{{row[7]}}</td>
-</tr>
+    
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+<td>{{ row[4] }}</td>
+<td>{{ row[5] }}</td>
+<td>{{ row[6] }}%</td>
 
+<td>{{ row[8] }}°</td>  <!-- max flexion -->
+<td>{{ row[9] }}°</td>  <!-- max extension -->
+<td>{{ row[10] }}°</td> <!-- rom -->
+<td>{{ row[11] }} sec</td> <!-- avg time -->
+<td>{{ row[12] }}%</td> <!-- form score -->
+
+<td>{{ row[13] }}</td> <!-- ✅ correct date -->
+
+</tr>
 {% endfor %}
 
 </table>
+
+<br><br>
+
+<a href="/dashboard">
+<button style="padding:10px;font-size:16px;">
+Go To Dashboard
+</button>
+</a>
+
+<a href="/report">
+<button style="padding:10px;font-size:16px;">
+Generate Report (PDF)
+</button>
+</a>

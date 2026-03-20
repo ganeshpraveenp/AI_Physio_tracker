@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Physio Monitor Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#0b1220;
+color:white;
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:70px;
+height:100vh;
+background:#111827;
+padding:20px 10px;
+position:fixed;
+transition:0.3s;
+overflow:hidden;
+border-right:1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar.open{
+width:220px;
+}
+
+/* TOGGLE */
+
+.toggle{
+font-size:24px;
+cursor:pointer;
+margin-bottom:30px;
+text-align:center;
+}
+
+/* MENU */
+
+.menu a{
+display:flex;
+align-items:center;
+gap:15px;
+padding:12px;
+border-radius:8px;
+text-decoration:none;
+color:#9ca3af;
+margin-bottom:10px;
+transition:0.2s;
+}
+
+.menu a:hover{
+background:#1f2937;
+color:white;
+}
+
+.icon{
+font-size:22px;
+min-width:25px;
+text-align:center;
+}
+
+/* TEXT HIDDEN */
+
+.text{
+display:none;
+}
+
+.sidebar.open .text{
+display:inline;
+}
+
+/* MAIN CONTENT */
+
+.main{
+margin-left:70px;
+padding:40px;
+width:100%;
+transition:0.3s;
+}
+
+.sidebar.open ~ .main{
+margin-left:220px;
+}
+
+h1{
+font-size:26px;
+margin-bottom:10px;
+}
+
+h2{
+font-size:18px;
+margin-bottom:30px;
+color:#9ca3af;
+}
+
+/* EXERCISE GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+}
+
+/* CARD */
+
+.card{
+background:#111827;
+padding:25px;
+border-radius:15px;
+text-align:center;
+transition:0.3s;
+cursor:pointer;
+border:1px solid transparent;
+}
+
+.card:hover{
+transform:translateY(-6px);
+border:1px solid #2563eb;
+box-shadow:0 10px 25px rgba(37,99,235,0.2);
+}
+
+.card .material-icons{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.card h3{
+margin-bottom:6px;
+}
+
+.card p{
+font-size:14px;
+color:#9ca3af;
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+margin-top:40px;
+font-size:14px;
+color:#6b7280;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar" id="sidebar">
+
+<div class="toggle" onclick="toggleSidebar()">
+<span class="material-icons">menu</span>
+</div>
+
+<div class="menu">
+
+<a href="/dashboard">
+<span class="material-icons icon">home</span>
+<span class="text">Home</span>
+</a>
+
+<a href="/history">
+<span class="material-icons icon">history</span>
+<span class="text">History</span>
+</a>
+
+<a href="/profile">
+<span class="material-icons icon">person</span>
+<span class="text">Profile</span>
+</a>
+
+<a href="/settings">
+<span class="material-icons icon">settings</span>
+<span class="text">Settings</span>
+</a>
+
+<a href="/logout">
+<span class="material-icons icon">logout</span>
+<span class="text">Logout</span>
+</a>
+
+</div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
+<div class="main">
+
+<h1>Exercise Dashboard</h1>
+<h2>Select an Exercise</h2>
+
+<div class="grid">
+    
+<div class="card" onclick="startExercise('elbow')">
+<span class="material-icons">fitness_center</span>
+<h3>Elbow Extension (PROM)</h3>
+<p>Passive movement to improve elbow range</p>
+</div>
+
+<div class="card" onclick="startExercise('shoulder')">
+<span class="material-icons">rotate_right</span>
+<h3>Shoulder Rolls</h3>
+<p>Relieves shoulder tension</p>
+</div>
+
+<div class="card" onclick="startExercise('arm')">
+<span class="material-icons">sports_gymnastics</span>
+<h3>Arm Circles</h3>
+<p>Improves mobility</p>
+</div>
+
+<div class="card" onclick="startExercise('squat')">
+<span class="material-icons">directions_run</span>
+<h3>Mini Squats</h3>
+<p>Strengthens legs</p>
+</div>
+
+<div class="card" onclick="startExercise('balance')">
+<span class="material-icons">self_improvement</span>
+<h3>Single Leg Stand</h3>
+<p>Improves balance</p>
+</div>
+
+</div>
+
+<div class="footer">
+Physiotherapy Monitoring System • AI Powered Exercise Tracking
+</div>
+
+</div>
+
+<script>
+
+function toggleSidebar(){
+document.getElementById("sidebar").classList.toggle("open");
+}
+
+function startExercise(type){
+    window.location.href = "/exercise?exercise=" + type;
+}
+
+</script>
+
+</body>
+</html>

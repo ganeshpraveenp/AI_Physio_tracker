@@ -46,63 +46,64 @@ def process_frame(frame):
     results = pose.process(image)
 
     if not results.pose_landmarks:
-        message = "Elbow not visible"
+        message = "Shoulder not visible"
         return frame, rep_count, message
 
     landmarks = results.pose_landmarks.landmark
 
-    # Coordinates
+    # 🔥 Using LEFT arm for variety (you can change to RIGHT if needed)
     shoulder = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y
+        landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+        landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y
     ]
 
     elbow = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y
+        landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+        landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y
     ]
 
     wrist = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y
+        landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+        landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y
     ]
 
+    # 🔥 SHOULDER RAISE ANGLE (same calculation)
     angle = calculate_angle(shoulder, elbow, wrist)
 
-    # Track max extension
+    # Track max extension & flexion
     if angle > max_extension:
         max_extension = angle
 
-    # Track max flexion
     if angle < max_flexion:
         max_flexion = angle
 
-    # Arm straight
-    if angle > 160:
+    # 🔥 DOWN (arm straight down)
+    if angle > 150:
         stage = "down"
-        message = "Arm extended"
+        message = "Arm down"
 
-    # Rep completed
-    if angle < 40 and stage == "down":
+    # 🔥 UP (arm raised)
+    if angle < 60 and stage == "down":
         stage = "up"
         rep_count += 1
 
-        # Rep timing
+        # ⏱ timing
         if rep_start_time is not None:
             rep_time = time.time() - rep_start_time
             rep_times.append(rep_time)
 
         rep_start_time = time.time()
 
+        # ✔ form check
         if angle < 50:
             correct_rep += 1
-            message = f"Rep {rep_count} ✔ Good form"
+            message = f"Rep {rep_count} ✔ Good raise"
         else:
-            message = f"Rep {rep_count} ⚠ Bend more"
+            message = f"Rep {rep_count} ⚠ Raise higher"
 
-    # Middle position
-    if 40 < angle < 160:
-        message = "Adjust arm position"
+    # Middle
+    if 60 < angle < 150:
+        message = "Raise your arm"
 
     # Draw skeleton
     mp_drawing.draw_landmarks(
@@ -113,17 +114,14 @@ def process_frame(frame):
 
     h, w, _ = frame.shape
 
-    # Convert to pixel coordinates
     elbow_pixel = tuple(np.multiply(elbow, [w, h]).astype(int))
     shoulder_pixel = tuple(np.multiply(shoulder, [w, h]).astype(int))
     wrist_pixel = tuple(np.multiply(wrist, [w, h]).astype(int))
 
-    # Highlight joints
     cv2.circle(frame, shoulder_pixel, 8, (0,255,0), -1)
     cv2.circle(frame, elbow_pixel, 8, (0,0,255), -1)
     cv2.circle(frame, wrist_pixel, 8, (255,0,0), -1)
 
-    # Display angle
     cv2.putText(
         frame,
         str(int(angle)),
@@ -138,6 +136,7 @@ def process_frame(frame):
     return frame, rep_count, message
 
 
+# 📊 REPORT (same format as elbow)
 def get_exercise_report():
 
     global rep_count, correct_rep
@@ -157,7 +156,7 @@ def get_exercise_report():
         form_score = 0
 
     report = {
-        "exercise": "Elbow Flexion",
+        "exercise": "Shoulder Raise",
         "reps_completed": rep_count,
         "correct_reps": correct_rep,
         "max_flexion": int(max_flexion),
@@ -168,3 +167,19 @@ def get_exercise_report():
     }
 
     return report
+
+
+# 🔁 RESET FUNCTION (VERY IMPORTANT)
+def reset():
+    global rep_count, correct_rep, stage, message
+    global max_extension, max_flexion
+    global rep_times, rep_start_time
+
+    rep_count = 0
+    correct_rep = 0
+    stage = None
+    message = "Start Exercise"
+    max_extension = 0
+    max_flexion = 180
+    rep_times = []
+    rep_start_time = None

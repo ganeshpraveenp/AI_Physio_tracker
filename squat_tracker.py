@@ -46,44 +46,44 @@ def process_frame(frame):
     results = pose.process(image)
 
     if not results.pose_landmarks:
-        message = "Elbow not visible"
+        message = "Body not visible"
         return frame, rep_count, message
 
     landmarks = results.pose_landmarks.landmark
 
-    # Coordinates
-    shoulder = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y
+    # RIGHT LEG POINTS
+    hip = [
+        landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
+        landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y
     ]
 
-    elbow = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y
+    knee = [
+        landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x,
+        landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y
     ]
 
-    wrist = [
-        landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-        landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y
+    ankle = [
+        landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,
+        landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y
     ]
 
-    angle = calculate_angle(shoulder, elbow, wrist)
+    angle = calculate_angle(hip, knee, ankle)
 
-    # Track max extension
+    # Track max extension (standing)
     if angle > max_extension:
         max_extension = angle
 
-    # Track max flexion
+    # Track max flexion (lowest squat)
     if angle < max_flexion:
         max_flexion = angle
 
-    # Arm straight
-    if angle > 160:
+    # 👇 DOWN POSITION
+    if angle < 90:
         stage = "down"
-        message = "Arm extended"
+        message = "Go Up"
 
-    # Rep completed
-    if angle < 40 and stage == "down":
+    # 👆 UP → REP COMPLETE
+    if angle > 160 and stage == "down":
         stage = "up"
         rep_count += 1
 
@@ -94,15 +94,16 @@ def process_frame(frame):
 
         rep_start_time = time.time()
 
-        if angle < 50:
+        # Form check
+        if angle > 165:
             correct_rep += 1
             message = f"Rep {rep_count} ✔ Good form"
         else:
-            message = f"Rep {rep_count} ⚠ Bend more"
+            message = f"Rep {rep_count} ⚠ Stand straight"
 
     # Middle position
-    if 40 < angle < 160:
-        message = "Adjust arm position"
+    if 90 <= angle <= 160:
+        message = "Keep going"
 
     # Draw skeleton
     mp_drawing.draw_landmarks(
@@ -114,20 +115,20 @@ def process_frame(frame):
     h, w, _ = frame.shape
 
     # Convert to pixel coordinates
-    elbow_pixel = tuple(np.multiply(elbow, [w, h]).astype(int))
-    shoulder_pixel = tuple(np.multiply(shoulder, [w, h]).astype(int))
-    wrist_pixel = tuple(np.multiply(wrist, [w, h]).astype(int))
+    hip_pixel = tuple(np.multiply(hip, [w, h]).astype(int))
+    knee_pixel = tuple(np.multiply(knee, [w, h]).astype(int))
+    ankle_pixel = tuple(np.multiply(ankle, [w, h]).astype(int))
 
     # Highlight joints
-    cv2.circle(frame, shoulder_pixel, 8, (0,255,0), -1)
-    cv2.circle(frame, elbow_pixel, 8, (0,0,255), -1)
-    cv2.circle(frame, wrist_pixel, 8, (255,0,0), -1)
+    cv2.circle(frame, hip_pixel, 8, (0,255,0), -1)
+    cv2.circle(frame, knee_pixel, 8, (0,0,255), -1)
+    cv2.circle(frame, ankle_pixel, 8, (255,0,0), -1)
 
     # Display angle
     cv2.putText(
         frame,
         str(int(angle)),
-        elbow_pixel,
+        knee_pixel,
         cv2.FONT_HERSHEY_SIMPLEX,
         1,
         (255,255,255),
@@ -157,7 +158,7 @@ def get_exercise_report():
         form_score = 0
 
     report = {
-        "exercise": "Elbow Flexion",
+        "exercise": "Squat",
         "reps_completed": rep_count,
         "correct_reps": correct_rep,
         "max_flexion": int(max_flexion),
