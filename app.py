@@ -7,7 +7,7 @@ import time
 from reportlab.pdfgen import canvas
 from flask import send_file
 import io
-current_exercise = "elbow"   # default
+current_exercise = "elbow"   
 
 app = Flask(__name__)
 app.secret_key = "physio_secret_key"
